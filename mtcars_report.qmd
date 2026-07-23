@@ -1,0 +1,214 @@
+---
+title: "mtcar_report"
+author: "AYUCHA"
+format:
+  html:
+    embed-resources: true
+editor: visual
+---
+
+## EXPLORATORY DATA ANALYSIS OF THE MTCARS DATASET
+
+# Introduction
+
+This report explores the mtcars dataset using R and ggplot2. The aim is to investigate relationships between vehicle characteristics such as weight, horsepower, cylinders, and transmission type and their effect on fuel efficiency.
+
+# Dataset view
+
+```{r}
+head(mtcars)
+```
+
+```{r}
+str(mtcars)
+```
+
+```{r}
+summary(mtcars)
+```
+
+The numerical variables available are; mpg ,disp ,hp ,drat ,wt ,qsec. These allow for arithmetic operations to take place.
+
+The categorical variables are;cyl ,vs ,am ,gear ,carb.For analysis and plotting, it is good to convert them to factors.
+
+# Exploratory questions
+
+## Question 1
+
+Does vehicle weight affect fuel efficiency?
+
+```{r}
+library(tidyverse)
+mtcars%>%
+  ggplot(aes(wt,mpg))+
+  geom_point(color="red")+
+  labs(title="Relationship between weight of the cars and fuel efficiency",
+       x="Weight",y="miles per gallon")+
+  theme_bw()
+  
+```
+
+Interpretation;
+
+The graph suggests a negative relationship between weight and fuel efficiency. As the weight of a car increases, its miles per gallon (mpg) generally decrease. This indicates that heavier cars are less fuel-efficient than lighter cars.
+
+## Question 2
+
+Does horsepower affect fuel efficiency?
+
+```{r}
+mtcars%>%
+  ggplot(aes(hp,mpg))+
+  geom_point(color="red")+
+  geom_smooth(method="lm",se=T)+
+  labs(title="Relationship between horsepower and fuel efficiency",x=
+         "horsepower",y="miles per gallon")+
+  theme_bw()
+```
+
+Interpretation
+
+The graph shows a strong negative relationship between horsepower and fuel efficiency. As horsepower increases, miles per gallon (MPG) clearly decreases. In other words, more powerful cars tend to be less fuel-efficient.
+
+## Question 3
+
+### Do manual cars have better fuel efficiency than automatic cars?
+
+```{r}
+#| message: false
+mtcars%>%
+  ggplot(aes(factor(am,labels=c("Automatic","Manual")),mpg,fill=factor(am,labels=c("Automatic","Manual"))))+
+  geom_jitter(width = 0.15, size = 3)+
+  geom_boxplot()+
+  labs(title="Comparison of fuel efficiency between Automatic and manual cars",x="Transmission",y="Miles per gallon")+
+  theme_bw()
+```
+
+Interpretation
+
+Manual transmission cars generally have a higher median fuel efficiency than automatic transmission cars.
+
+## Question 4
+
+Which cylinder category has the highest average horsepower?
+
+```{r}
+#| message: false
+
+mtcars%>%
+  group_by(cyl)%>%
+  summarise(avg_hp=mean(hp))%>%
+  ggplot(aes(factor(cyl),avg_hp,fill=factor(cyl)))+
+  geom_col()+
+  labs(title="Cylinder category against average horsepower",y="average horsepower",x="number of cylinders")+
+  theme_bw()
+ 
+```
+
+Interpretation
+
+The bar chart shows that 8-cylinder cars have the highest average horsepower, followed by 6-cylinder cars, while 4-cylinder cars have the lowest average horsepower. This indicates that vehicles with a greater number of cylinders generally produce more engine power.
+
+## Question 5
+
+Which transmission type is more common?
+
+```{r}
+mtcars%>%
+  ggplot(aes(factor(am,labels=c("Automatic","Manual")),fill=factor(am,labels=c("Automatic","Manual"))))+
+  geom_bar()+
+  labs(title="Counts of different Transmission mode",y="Counts",x="Transmission")+
+  theme_bw()
+```
+
+Interpretation
+
+The bar chart shows that automatic transmission cars are more common in the dataset than manual transmission cars.
+
+## Question 6
+
+How are cars distributed according to fuel efficiency?
+
+```{r}
+mtcars%>%
+  ggplot(aes(mpg))+
+  geom_histogram(fill="steelblue",color="steelblue")+
+  labs(title="Distribution of mpg")+
+  theme_bw()
+```
+
+Interpretation
+
+The histogram shows that most cars in the dataset have fuel efficiency between approximately 15 and 22 miles per gallon. Only a few cars have extremely low fuel efficiency (around 10 mpg) or very high fuel efficiency (above 30 mpg). Overall, the distribution indicates that moderate fuel efficiency is more common than extremely low or high fuel efficiency among the cars in the dataset.
+
+## Question 7
+
+Is horsepower related to vehicle weight?
+
+```{r}
+mtcars%>%
+  ggplot(aes(wt,hp))+
+  geom_jitter(width=0.15)+
+  labs(title="Relationship between horsepower and weight",y="horsepower",x="weight")+
+  theme_bw()
+
+mtcars%>%
+  ggplot(aes(wt,hp))+
+  geom_smooth(method="lm")+
+  labs(title="Relationship between horsepower and weight",y="horsepower",x="weight")+
+  theme_bw()
+```
+
+Interpretation
+
+The scatter plot indicates a moderate positive relationship between vehicle weight and horsepower. In general, heavier vehicles tend to have higher horsepower than lighter vehicles. However, the relationship is not perfect, as vehicles with similar weights can have noticeably different horsepower values. This suggests that while weight is associated with horsepower, other vehicle characteristics also contribute to engine power. The plot also contains a possible outlier with exceptionally high horsepower compared with other vehicles of similar weight.
+
+The fitted regression line indicates a positive linear relationship between vehicle weight and horsepower. On average, heavier vehicles tend to have higher horsepower.
+
+## Question 8
+
+Does fuel efficiency differ by the number of cylinders?
+
+```{r}
+mtcars%>%
+  ggplot(aes(factor(cyl),mpg,fill=factor(cyl)))+
+  geom_boxplot()+
+  labs(title="Distribution of fuel efficincy by the numbers of cylinders ",x="No.cylinders",y="Miles per gallon")+
+  theme_bw()
+```
+
+Interpretation
+
+The boxplot shows that fuel efficiency varies across cylinder categories. Cars with four cylinders have the highest median fuel efficiency, followed by six-cylinder cars, while eight-cylinder cars have the lowest median fuel efficiency. This suggests that vehicles with fewer cylinders are generally more fuel-efficient. The four-cylinder group also exhibits greater variability in fuel efficiency compared with the six- and eight-cylinder groups. Additionally, the eight-cylinder category contains a few outliers, indicating unusually high or low fuel efficiency relative to other vehicles in the same group.
+
+## Question 9
+
+Correlation Matrix
+
+```{r}
+cor(mtcars)
+```
+
+Interpretation
+
+The correlation matrix revealed several strong relationships among the numerical variables. Vehicle weight was strongly negatively correlated with fuel efficiency (r = -0.868), indicating that heavier cars tend to consume more fuel. Engine displacement showed a strong positive correlation with the number of cylinders (r = 0.902) and vehicle weight (r = 0.888), suggesting that larger engines are generally found in heavier vehicles. Horsepower was also strongly negatively correlated with fuel efficiency (r = -0.776), indicating that more powerful cars tend to achieve lower miles per gallon.
+
+# Summary
+
+This exploratory data analysis examined the relationships between selected vehicle characteristics in the **mtcars** dataset. The analysis revealed that **vehicle weight and horsepower are negatively associated with fuel efficiency**, indicating that heavier and more powerful cars generally achieve lower miles per gallon (MPG). The comparison of transmission types showed that **manual transmission cars tend to have higher fuel efficiency than automatic cars**. Additionally, the analysis of cylinder categories demonstrated that **vehicles with more cylinders have higher average horsepower**, suggesting that engine power generally increases with the number of cylinders.
+
+# Skills demonstrated
+
+✔ Data exploration
+
+✔ Data cleaning
+
+✔ Data manipulation using dplyr
+
+✔ Data visualization using ggplot2
+
+✔ Statistical interpretation
+
+✔ Group summaries
+
+✔ Professional reporting using R Markdown
